@@ -1,6 +1,7 @@
 import pygame
 
 BALL_RADIUS = 40
+BALL_SPEED = 0.25
 BG_COLOUR = pygame.Color("black")
 HUE_MAX = 360
 HUE_RATE = 0.5
@@ -18,6 +19,8 @@ def main():
     clock = pygame.Clock()
     running = True
     ball_colour = pygame.Color("blue")
+    ball_direction = pygame.Vector2(1, 1)
+    ball_position = pygame.Vector2(*SCREEN_CENTRE)
     dt = 0.0
 
     while running:
@@ -31,7 +34,24 @@ def main():
         # Shift hue according to HUE_RATE and time since last frame
         h, *sla = ball_colour.hsla
         ball_colour.hsla = (wrap(h + round(dt * HUE_RATE), HUE_MAX), *sla)
-        pygame.draw.circle(screen, ball_colour, SCREEN_CENTRE, BALL_RADIUS)
+
+        # Move ball position in the current direction according to BALL_SPEED
+        # and time since last frame
+        ball_position += ball_direction * BALL_SPEED * dt
+
+        # Bounce the ball if it hits the left or right sides
+        if ball_position.x - BALL_RADIUS < 0:
+            ball_direction.x = 1
+        elif ball_position.x + BALL_RADIUS > SCREEN_SIZE[0]:
+            ball_direction.x = -1
+
+        # Bounce the ball if it hits the top or bottom sides
+        if ball_position.y - BALL_RADIUS < 0:
+            ball_direction.y = 1
+        elif ball_position.y + BALL_RADIUS > SCREEN_SIZE[1]:
+            ball_direction.y = -1
+
+        pygame.draw.circle(screen, ball_colour, ball_position, BALL_RADIUS)
 
         pygame.display.flip()
         dt = clock.tick()
