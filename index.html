@@ -13,6 +13,13 @@
 		async function run(params) {
 			const canvas = document.getElementById("canvas");
 
+			// Loading text
+			const ctx = canvas.getContext("2d");
+			ctx.font = "24px sans-serif";
+			ctx.textAlign = "center";
+			ctx.fillText("Loading Pyodide...", 320, 240)
+
+			// Setup Pyodide
 			const pyodide = await loadPyodide();
 			pyodide.canvas.setCanvas2D(canvas);
 			await pyodide.loadPackage([
@@ -20,6 +27,7 @@
 				"./dist/pyodide_pygame_demo-0.1.0-py3-none-any.whl",
 			]);
 
+			// Run demo
 			const demo = pyodide.pyimport("pyodide_pygame_demo");
 			demo.main()
 		}
