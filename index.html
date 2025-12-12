@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pyodide Pygame Demo</title>
+	<script src="https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js"></script>
+</head>
+<body>
+	<canvas id="canvas" width="640" height="480"></canvas>
+	<script>
+		async function run(params) {
+			const canvas = document.getElementById("canvas");
+
+			const pyodide = await loadPyodide();
+			pyodide.canvas.setCanvas2D(canvas);
+			await pyodide.loadPackage([
+				"pygame-ce",
+				"./dist/pyodide_pygame_demo-0.1.0-py3-none-any.whl",
+			]);
+
+			const demo = pyodide.pyimport("pyodide_pygame_demo");
+			demo.main()
+		}
+
+		run()
+	</script>
+</body>
+</html>
