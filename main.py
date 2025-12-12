@@ -2,8 +2,14 @@ import pygame
 
 BALL_RADIUS = 40
 BG_COLOUR = pygame.Color("black")
+HUE_MAX = 360
+HUE_RATE = 0.5
 SCREEN_CENTRE = (320, 240)
 SCREEN_SIZE = (640, 480)
+
+
+def wrap(value: int, max: int) -> int:
+    return value % max if value > max else value
 
 
 def main():
@@ -12,6 +18,7 @@ def main():
     clock = pygame.Clock()
     running = True
     ball_colour = pygame.Color("blue")
+    dt = 0.0
 
     while running:
         events = pygame.event.get()
@@ -21,10 +28,13 @@ def main():
 
         screen.fill(BG_COLOUR)
 
+        # Shift hue according to HUE_RATE and time since last frame
+        h, *sla = ball_colour.hsla
+        ball_colour.hsla = (wrap(h + round(dt * HUE_RATE), HUE_MAX), *sla)
         pygame.draw.circle(screen, ball_colour, SCREEN_CENTRE, BALL_RADIUS)
 
         pygame.display.flip()
-        clock.tick()
+        dt = clock.tick()
 
 
 if __name__ == "__main__":
