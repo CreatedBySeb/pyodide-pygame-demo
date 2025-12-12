@@ -1,8 +1,10 @@
+import asyncio
 import pygame
 
 BALL_RADIUS = 40
 BALL_SPEED = 0.25
 BG_COLOUR = pygame.Color("black")
+FRAME_DELAY = 1.0 / 120.0
 HUE_MAX = 360
 HUE_RATE = 0.5
 SCREEN_CENTRE = (320, 240)
@@ -13,14 +15,14 @@ def wrap(value: int, max: int) -> int:
     return value % max if value > max else value
 
 
-def main():
+async def main():
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
-    clock = pygame.Clock()
     running = True
     ball_colour = pygame.Color("blue")
     ball_direction = pygame.Vector2(1, 1)
     ball_position = pygame.Vector2(*SCREEN_CENTRE)
+    last_ticks = pygame.time.get_ticks()
     dt = 0.0
 
     while running:
@@ -54,8 +56,15 @@ def main():
         pygame.draw.circle(screen, ball_colour, ball_position, BALL_RADIUS)
 
         pygame.display.flip()
-        dt = clock.tick()
+
+        # Replacement for framerate-less pygame.Clock.tick
+        ticks = pygame.time.get_ticks()
+        dt = ticks - last_ticks
+        last_ticks = ticks
+
+        # Yield each frame, pyodide doesn't work properly with a value of 0 so we use a small delay
+        await asyncio.sleep(FRAME_DELAY)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
