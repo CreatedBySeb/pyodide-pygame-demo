@@ -9,19 +9,32 @@
 		html, body {
 			margin: 0;
 		}
+
+		#start-box {
+			align-items: center;
+			display: flex;
+			height: 480px;
+			justify-content: center;
+			position: absolute;
+			width: 720px;
+		}
+
+		#start-game {
+			font-size: 18pt;
+			padding: .5rem 1rem;
+		}
 	</style>
 </head>
 <body>
+	<div id="start-box">
+		<button id="start-game">Loading...</button>
+	</div>
 	<canvas id="canvas" width="640" height="480"></canvas>
 	<script>
-		async function run(params) {
+		async function setup(params) {
 			const canvas = document.getElementById("canvas");
-
-			// Loading text
-			const ctx = canvas.getContext("2d");
-			ctx.font = "24px sans-serif";
-			ctx.textAlign = "center";
-			ctx.fillText("Loading Pyodide...", 320, 240)
+			const startButton = document.getElementById("start-game");
+			startButton.disabled = true; // Work around Firefox quirk persisting across reloads
 
 			// Setup Pyodide
 			const pyodide = await loadPyodide();
@@ -31,12 +44,21 @@
 				"./dist/pyodide_pygame_demo-0.1.0-py3-none-any.whl",
 			]);
 
-			// Run demo
+			// Import demo
 			const demo = pyodide.pyimport("pyodide_pygame_demo");
-			demo.main()
+
+			// Enable start button
+			startButton.disabled = false;
+			startButton.textContent = "Start";
+
+			startButton.addEventListener("click", () => {
+				// Hide start box and start game on click
+				startButton.parentElement.style.display = "none";
+				demo.main();
+			});
 		}
 
-		run()
+		setup()
 	</script>
 </body>
 </html>
