@@ -6,10 +6,22 @@ BALL_RADIUS = 40
 BALL_SPEED = 0.25
 BG_COLOUR = pygame.Color("black")
 FRAME_DELAY = 1.0 / 120.0
+HINT_COLOUR = pygame.Color("white")
+HINT_OFFSET = 40
+HINT_SIZE = 48
+HINT_TEXT = "Click/tap to mute/unmute"
 HUE_MAX = 360
 HUE_RATE = 0.5
 SCREEN_CENTRE = (320, 240)
 SCREEN_SIZE = (640, 480)
+
+
+def draw_centred_text(
+    surface: pygame.Surface, font: pygame.Font, position: tuple[int, int], text: str
+) -> None:
+    x, y = position
+    width, height = font.size(text)
+    surface.blit(font.render(text, True, HINT_COLOUR), (x - width / 2, y - height / 2))
 
 
 def wrap(value: int, max: int) -> int:
@@ -21,6 +33,7 @@ async def main():
     screen = pygame.display.set_mode(SCREEN_SIZE)
 
     running = True
+    muted = False
 
     ball_colour = pygame.Color("blue")
     ball_direction = pygame.Vector2(1, 1)
@@ -31,6 +44,8 @@ async def main():
     )
     bounce_sound.set_volume(0.25)
 
+    hint_font = pygame.Font(size=HINT_SIZE)
+
     last_ticks = pygame.time.get_ticks()
     dt = 0.0
 
@@ -39,6 +54,8 @@ async def main():
 
         if any(event.type == pygame.QUIT for event in events):
             running = False
+        elif any(event.type == pygame.MOUSEBUTTONDOWN for event in events):
+            muted = not muted
 
         screen.fill(BG_COLOUR)
 
@@ -70,11 +87,17 @@ async def main():
             bounced = True
 
         # Play the sound effect if we bounced off of any edge
-        if bounced:
+        if bounced and not muted:
             bounce_sound.play()
 
-        # Draw the ball and flip the framebuffer
+        # Draw the ball, hint text, and flip the framebuffer
         pygame.draw.circle(screen, ball_colour, ball_position, BALL_RADIUS)
+        draw_centred_text(
+            screen,
+            hint_font,
+            (SCREEN_CENTRE[0], SCREEN_SIZE[1] - HINT_OFFSET),
+            HINT_TEXT,
+        )
         pygame.display.flip()
 
         # Replacement for framerate-less pygame.Clock.tick
