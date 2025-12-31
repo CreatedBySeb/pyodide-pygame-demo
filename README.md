@@ -4,7 +4,8 @@ This is a simple demo project showing how you can export a [pygame-ce](https://p
 the web using [Pyodide](https://pyodide.org/en/stable/). It displays a ball that changes colours and
 bounces around the screen, inspired by the DVD logo. It was written as a demonstration for
 [this article I wrote about Pygame on the web](https://www.sebastienfulmer.com/thoughts/pygame-on-the-web-with-pyodide/)
-which details how it works and how to adapt your own project.
+which details how it works and how to adapt your own project. I also have published it on Itch.io
+[here](https://createdbyseb.itch.io/pyodide-pygame-demo).
 
 It uses [uv](https://docs.astral.sh/uv/) as the project manager and build system for the Python
 code, and a simple `index.html` file to display it.
